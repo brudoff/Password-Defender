@@ -1,0 +1,3 @@
+{
+    "files": ["main.py","BufferData.py","NewEntryWindow.py","Crypter.py","TableModel.py","Settings.py","AuthWindow.py","StartWindow.py","ViewWindow.py","Form/AuthForm.ui","Form/NewEntryForm.ui","Form/StartForm.ui","Form/ViewForm.ui"]
+}
