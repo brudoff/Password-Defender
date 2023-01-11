@@ -19,15 +19,13 @@ class Crypter:
     """ Class for security all data """
 
     def __init__(self):
-        self.__filename = "master_key.key"
         self.__fernet_key = None
         self.__master_key = ""
-        self.__load_master_key()
 
-    def __load_master_key(self):
+    def load_master_key(self, filename):
         try:
             # Read hash of MK from file excepted salt
-            with open(self.__filename, 'rb') as file:
+            with open(filename, 'rb') as file:
                 hash = file.read()
                 self.__salt = hash[:33]
                 self.__master_key = hash[32:]
@@ -35,7 +33,7 @@ class Crypter:
 
         except FileNotFoundError:
                 # If file not found error create new file with hash of MK
-                self.create_master_key()
+                self.create_master_key("Test123", "master_key.key")
                 return 1
 
     def check_master_key(self, _key):
@@ -46,19 +44,21 @@ class Crypter:
         else:
             return False
 
-    def create_master_key(self):
+    def create_master_key(self, key, filename):
         # Create file for storage MK
-        with open(self.__filename, 'wb') as file:
+        with open(filename, 'wb') as file:
             # Generate salt
             self.__salt = os.urandom(32)
             # Encode password
-            self.__master_key = hashlib.sha256("Test123".encode('utf-8')).digest()
+            self.__master_key = hashlib.sha256(key.encode('utf-8')).digest()
             # Save hash of MK to file
-            storage = self.__salt + self.__master_key
-            file.write(storage)
+            hash = self.__salt + self.__master_key
+            file.write(hash)
+            self.__initKey(key)
 
     def __initKey(self, _key):
-        kdf = PBKDF2HMAC(algorithm=hashes.SHA512(), salt=self.__salt, length=32,iterations=400000)
+        kdf = PBKDF2HMAC(algorithm=hashes.SHA512(), salt=self.__salt,
+                         length=32, iterations=400000)
         self.__fernet_key = base64.urlsafe_b64encode(kdf.derive(_key.encode()))
         self.__fernet = Fernet(self.__fernet_key)
 

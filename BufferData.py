@@ -7,31 +7,35 @@ from TableModel import TableModel
 
 class BufferData:
     """ Buffer class between View and Database,
-        This class control reading, writing and encrypting data
-    """
+        This class control reading, writing and encrypting data """
 
     SUCCESS = 0
     DB_OPEN_FAILED = 1
     QUERY_EXEC_FAILED = 2
     REMOVE_ROW_FAILED = 3
     INSERT_ROW_FAILED = 4
+    UPDATE_CELL_FAILED = 5
 
-    def __init__(self, crypter: Crypter, path: str):
+    def __init__(self, crypter: Crypter, path = "", db = None):
         self.__crypter = crypter
-        self.__db = QtSql.QSqlDatabase.addDatabase("QSQLITE")
-        self.__db.setDatabaseName(path)
+        if not db:
+            self.__db = QtSql.QSqlDatabase.addDatabase("QSQLITE")
+            self.__db.setDatabaseName(path)
+        else:
+            self.__db = db
         self.readData()
         if self.model:
-           print("Read data : DONE")
+            print("Open DB : DONE")
         else:
-            print("DB wasn`t open")
+            print("Open DB : Error")
+        # Connect slot with signals
+        self.model.cellChanged.connect(self.editRow)
 
     def readData(self):
         if self.__db.open():
             query = QtSql.QSqlQuery("SELECT * FROM user_data")
             data = []
             while query.next():
-                print("Query exec")
                 row = []
                 id = query.value(0)
                 domain = self.__crypter.decrypt(query.value(1).encode())
@@ -71,9 +75,19 @@ class BufferData:
         else:
             return self.DB_OPEN_FAILED
 
-
-    def editRow(self, row: int) -> int:
-        ...
+    def editRow(self, id: int, value: str, field: str) -> int:
+        if self.__db.open():
+            query = QtSql.QSqlQuery()
+            value = self.__crypter.encrypt(value).decode()
+            query.prepare(f"UPDATE user_data SET {field}='{value}' WHERE id='{id}'")
+            if query.exec_():
+                self.__db.close()
+                return self.SUCCESS
+            else:
+                self.__db.close()
+                return self.UPDATE_CELL_FAILED
+        else:
+            return self.DB_OPEN_FAILED
 
     def addRow(self, list_data: list) -> int:
         if self.__db.open():

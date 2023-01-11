@@ -1,27 +1,42 @@
 ﻿# This Python file uses the following encoding: utf-8
 from PyQt5.QtCore import Qt, QAbstractTableModel, QModelIndex
 from PyQt5.QtGui import QFont
+from PyQt5 import QtCore
+
 
 class TableModel(QAbstractTableModel):
+    # Custom signal which emit after changing data
+    cellChanged = QtCore.pyqtSignal(int, str, str)
+
     def __init__(self, data):
         QAbstractTableModel.__init__(self)
         self.__data = data
+        print(len(self.__data))
         self.__rowCount = len(self.__data)
         self.__horizontal_data = []
 
-    def rowCount(self, index = QModelIndex()) -> int:
+    def rowCount(self, index = QModelIndex()):
         return self.__rowCount
 
+
     def columnCount(self, index = QModelIndex()):
-        if self.__rowCount > 0:
+        if self.rowCount() > 0:
             return len(self.__data[0])
+        else:
+            return 0
 
     def flags(self, index):
-        return Qt.ItemIsSelectable | Qt.ItemIsEnabled
+        if index.column() == 0:
+            return Qt.ItemIsSelectable | Qt.ItemIsEnabled
+        else:
+            return Qt.ItemIsSelectable | Qt.ItemIsEnabled | Qt.ItemIsEditable
 
     def setData(self, index, value, role = Qt.EditRole):
-        if role == Qt.EditRole and value:
+        if role == Qt.EditRole and value and index.column() != 0:
             self.__data[index.row()][index.column()] = value
+            id = self.__data[index.row()][0]
+            fieldName = self.__horizontal_data[index.column()]
+            self.cellChanged.emit(id, value, fieldName)
             return True
         return False
 

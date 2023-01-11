@@ -116,7 +116,7 @@
        </spacer>
       </item>
       <item row="3" column="0">
-       <widget class="QPushButton" name="btnCreate">
+       <widget class="QPushButton" name="newBtn">
         <property name="minimumSize">
          <size>
           <width>100</width>
@@ -148,7 +148,7 @@
          <locale language="English" country="UnitedStates"/>
         </property>
         <property name="text">
-         <string>Create</string>
+         <string>New</string>
         </property>
        </widget>
       </item>
@@ -164,7 +164,7 @@
          </font>
         </property>
         <property name="text">
-         <string>Add</string>
+         <string>Add...</string>
         </property>
        </widget>
       </item>

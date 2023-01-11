@@ -9,6 +9,7 @@ from PyQt5.QtWidgets import QVBoxLayout
 from StartWindow import StartWindow
 from ViewWindow import ViewWindow
 from AuthWindow import AuthWindow
+from CreateDatabaseWindow import CreateDatabaseWindow as CreateDBWindow
 from Crypter import Crypter
 from Settings import Settings
 
@@ -21,18 +22,23 @@ class Main(QWidget):
         self.__attempt = 3
         self.__initUi()
 
-    def on_add_clicked(self):
-        # User choose file with DB
-        file_dlg = QFileDialog(self)
-        file_dlg.setDirectory(os.path.abspath(os.getcwd()))
-        # Execute file dialog and read path to DB
-        if file_dlg.exec_():
-            print(file_dlg.selectedFiles()[0])
+    def on_new_db_created(self, crypter, db):
+        self.createDB_window.close()
+        self.view_window = ViewWindow("", crypter, db)
+        self.stack.addWidget(self.view_window)
+        self.view_window.initForm()
+        # Change Main widget and show data
+        self.stack.setCurrentIndex(1)
 
+    def on_new_clicked(self):
+        self.createDB_window = CreateDBWindow(self.crypter, self.settings)
+        self.createDB_window.setWindowModality(QtCore.Qt.ApplicationModal)
+        self.createDB_window.create_new_db.connect(self.on_new_db_created)
+        self.createDB_window.show()
 
     def on_open_clicked(self):
-        """ Method for adding exist pair database/master_key"""
         self.choosed_db = self.start_window.databaseLw.currentItem().text()
+        self.crypter.load_master_key(self.settings.getMKFilename(self.choosed_db))
         self.auth.setWindowModality(QtCore.Qt.ApplicationModal)
         self.auth.show()
 
@@ -46,7 +52,7 @@ class Main(QWidget):
                 self.view_window = ViewWindow(self.choosed_db, self.crypter)
                 self.stack.addWidget(self.view_window)
                 self.view_window.initForm()
-                # Change Main widget and show all users data
+                # Change Main widget and show data
                 self.stack.setCurrentIndex(1)
                 # Close auth form
                 self.auth.close()
@@ -76,6 +82,7 @@ class Main(QWidget):
         # Connect all handler event function
         self.start_window.btnOpen.clicked.connect(self.on_open_clicked)
         self.auth.btnConfirm.clicked.connect(self.on_confirm_clicked)
+        self.start_window.newBtn.clicked.connect(self.on_new_clicked)
 
 
 def main():

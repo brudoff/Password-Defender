@@ -28,7 +28,7 @@ class NewEntryWindow(QWidget):
         _username = self.usernameLe.text()
         _password = self.passwordLe.text()
         _description = self.descriptionLe.text()
-        # After click on submit button emit signal with inserted data
+        # After click on submit button emit signal which send inserted data
         self.submitClick.emit([_domain, _username, _password, _description])
         self.close()
 

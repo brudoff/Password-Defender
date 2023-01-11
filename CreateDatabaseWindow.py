@@ -1,0 +1,49 @@
+﻿# This Python file uses the following encoding: utf-8
+from PyQt5.QtSql import QSqlDatabase, QSqlQuery
+from PyQt5.QtWidgets import QWidget
+from PyQt5 import uic
+from PyQt5 import QtCore
+import os
+# Custom packages
+from Crypter import Crypter
+from Settings import Settings
+
+
+class CreateDatabaseWindow(QWidget):
+    create_new_db = QtCore.pyqtSignal(Crypter, QSqlDatabase)
+
+    def __init__(self, crypter: Crypter, settings: Settings):
+        QWidget.__init__(self)
+        uic.loadUi("Form/CreateDatabaseForm.ui", self)
+        self.crypter = crypter
+        self.settings = settings
+        self.submitBtn.clicked.connect(self.on_submit_clicked)
+
+    def on_submit_clicked(self):
+        # Get info from line edit widgets
+        db_name = self.databaseNameLe.text()
+        master_key = self.masterKeyLe.text()
+        # Create hash of MK and save it to file
+        self.crypter.create_master_key(master_key, f"{db_name}_mk.key")
+        # Create DB and emit signal which send handler of DB and MK
+        path = os.path.join(os.getcwd(), f"{db_name}.db")
+        self.settings.appendNewDB(path, f"{db_name}_mk.key")
+        self.create_new_db.emit(self.crypter, self.create_db(path))
+
+    def create_db(self, path):
+        db = QSqlDatabase.addDatabase("QSQLITE")
+        db.setDatabaseName(path)
+        if db.open():
+            query = QSqlQuery()
+            query_str = """CREATE TABLE user_data(id INTEGER PRIMARY KEY,
+                            domain STRING NOT NULL, username STRING NOT NULL,
+                            password STRING NOT NULL, description TEXT)"""
+            if query.exec_(query_str):
+                print("Create new DB : Done")
+            else:
+                print("Create new DB : Error")
+            db.close()
+            return db
+        else:
+            print("Problem with opening DB")
+            return None
