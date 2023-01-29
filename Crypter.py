@@ -1,5 +1,4 @@
-﻿""" Crypter objects responsible for encrypt/decrypt data """
-from cryptography.fernet import Fernet
+﻿from cryptography.fernet import Fernet
 from cryptography.hazmat.primitives import hashes
 from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
 import base64
@@ -7,34 +6,20 @@ import os
 import hashlib
 
 
-class MasterKeyError(Exception):
-    """ Raise this type exception if general key wasn`t correct """
-
-    def __init__(self, message="General key not correct!"):
-        self.message = message
-        super().__init__(self.message)
-
-
 class Crypter:
-    """ Class for security all data """
+    """ Crypter objects responsible for encrypt/decrypt data """
 
     def __init__(self):
         self.__fernet_key = None
         self.__master_key = ""
 
     def load_master_key(self, filename):
-        try:
-            # Read hash of MK from file excepted salt
-            with open(filename, 'rb') as file:
-                hash = file.read()
-                self.__salt = hash[:33]
-                self.__master_key = hash[32:]
-                return 0
-
-        except FileNotFoundError:
-                # If file not found error create new file with hash of MK
-                self.create_master_key("Test123", "master_key.key")
-                return 1
+        # Read hash of MK from file excepted salt
+        with open(filename, 'rb') as file:
+             hash = file.read()
+             self.__salt = hash[:33]
+             self.__master_key = hash[32:]
+        return 0
 
     def check_master_key(self, _key):
         # Compare master key hash with storage hash

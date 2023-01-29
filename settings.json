@@ -1,1 +1,1 @@
-{"databases": [{"mk": "master_key.key", "path": "D:\\Python\\Qt\\PasswordDefender\\data.db"}, {"mk": "test_mk.key", "path": "D:\\Python\\Qt\\PasswordDefender\\test.db"}]}
+{"databases": [{"mk": "master_key.key", "path": "D:\\Python\\Qt\\PasswordDefender\\data.db"}, {"mk": "D:/Python/Qt/PasswordDefender/test_mk.key", "path": "D:/Python/Qt/PasswordDefender/test.db"}]}

@@ -23,10 +23,10 @@ class Main(QWidget):
         self.__initUi()
 
     def on_new_db_created(self, crypter, db):
-        self.createDB_window.close()
+        # Init View Form with new empty db and add it to stack of widgets
         self.view_window = ViewWindow("", crypter, db)
-        self.stack.addWidget(self.view_window)
         self.view_window.initForm()
+        self.stack.addWidget(self.view_window)
         # Change Main widget and show data
         self.stack.setCurrentIndex(1)
 

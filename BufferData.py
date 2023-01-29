@@ -9,15 +9,9 @@ class BufferData:
     """ Buffer class between View and Database,
         This class control reading, writing and encrypting data """
 
-    SUCCESS = 0
-    DB_OPEN_FAILED = 1
-    QUERY_EXEC_FAILED = 2
-    REMOVE_ROW_FAILED = 3
-    INSERT_ROW_FAILED = 4
-    UPDATE_CELL_FAILED = 5
-
     def __init__(self, crypter: Crypter, path = "", db = None):
         self.__crypter = crypter
+        # Check if database not
         if not db:
             self.__db = QtSql.QSqlDatabase.addDatabase("QSQLITE")
             self.__db.setDatabaseName(path)
@@ -58,38 +52,29 @@ class BufferData:
             self.model.setHeaderData(4, "Description")
         self.__db.close()
 
-    def removeRow(self, id: int) -> int:
+    def removeRow(self, id: int):
         if self.__db.open():
             query = QtSql.QSqlQuery()
             query.prepare(f"DELETE FROM user_data WHERE id = '{id}'")
             if query.exec_():
                 if self.model.remove(id):
                     self.__db.close()
-                    return self.SUCCESS
-                else:
-                    self.__db.close()
-                    return self.REMOVE_ROW_FAILED
-            else:
-                self.__db.close()
-                return self.QUERY_EXEC_FAILED
-        else:
-            return self.DB_OPEN_FAILED
+                    return True
+            self.__db.close()
+        return False
 
-    def editRow(self, id: int, value: str, field: str) -> int:
+    def editRow(self, id: int, value: str, field: str):
         if self.__db.open():
             query = QtSql.QSqlQuery()
             value = self.__crypter.encrypt(value).decode()
             query.prepare(f"UPDATE user_data SET {field}='{value}' WHERE id='{id}'")
             if query.exec_():
                 self.__db.close()
-                return self.SUCCESS
-            else:
-                self.__db.close()
-                return self.UPDATE_CELL_FAILED
-        else:
-            return self.DB_OPEN_FAILED
+                return True
+            self.__db.close()
+        return False
 
-    def addRow(self, list_data: list) -> int:
+    def addRow(self, list_data: list):
         if self.__db.open():
             query = QtSql.QSqlQuery()
             query.prepare("INSERT INTO user_data VALUES(?,?,?,?,?)")
@@ -102,13 +87,7 @@ class BufferData:
             if query.exec_():
                 if self.model.insert(list_data):
                     self.__db.close()
-                    return self.SUCCESS
-                else:
-                    self.__db.close()
-                    return self.INSERT_ROW_FAILED
-            else:
-                self.__db.close()
-                return self.QUERY_EXEC_FAILED
-        else:
-            return self.DB_OPEN_FAILED
+                    return True
+            self.__db.close()
+        return False
 

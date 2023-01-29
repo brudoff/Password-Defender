@@ -52,7 +52,7 @@
      <x>10</x>
      <y>10</y>
      <width>301</width>
-     <height>469</height>
+     <height>475</height>
     </rect>
    </property>
    <layout class="QVBoxLayout" name="mainLayout">
@@ -147,6 +147,38 @@
      </widget>
     </item>
     <item>
+     <layout class="QHBoxLayout" name="generateLayout">
+      <item>
+       <widget class="QPushButton" name="generateBtn">
+        <property name="font">
+         <font>
+          <family>Microsoft New Tai Lue</family>
+          <pointsize>10</pointsize>
+          <weight>75</weight>
+          <bold>true</bold>
+         </font>
+        </property>
+        <property name="text">
+         <string>Generate</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QSlider" name="lengthPasswordSlider">
+        <property name="minimum">
+         <number>8</number>
+        </property>
+        <property name="maximum">
+         <number>64</number>
+        </property>
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </item>
+    <item>
      <spacer name="verticalSpacer">
       <property name="orientation">
        <enum>Qt::Vertical</enum>
@@ -161,6 +193,21 @@
        </size>
       </property>
      </spacer>
+    </item>
+    <item>
+     <widget class="QLabel" name="lengthPasswordLb">
+      <property name="font">
+       <font>
+        <family>Microsoft New Tai Lue</family>
+        <pointsize>10</pointsize>
+        <weight>75</weight>
+        <bold>true</bold>
+       </font>
+      </property>
+      <property name="text">
+       <string>Password length</string>
+      </property>
+     </widget>
     </item>
     <item>
      <widget class="QLineEdit" name="descriptionLe">
@@ -279,6 +326,17 @@
      </layout>
     </item>
    </layout>
+  </widget>
+  <widget class="QWidget" name="horizontalLayoutWidget_2">
+   <property name="geometry">
+    <rect>
+     <x>10</x>
+     <y>340</y>
+     <width>301</width>
+     <height>31</height>
+    </rect>
+   </property>
+   <layout class="QHBoxLayout" name="horizontalLayout"/>
   </widget>
  </widget>
  <resources/>

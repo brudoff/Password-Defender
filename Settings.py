@@ -23,6 +23,7 @@ class Settings:
         return None
 
     def appendNewDB(self, db_name, mk_filename):
+        self.db_info[mk_filename] = db_name
         self.json_data['databases'].append({'mk' : mk_filename, 'path' : db_name})
         with open(os.path.join(os.getcwd(), self.settings_file), 'r+') as jfile:
             jfile.seek(0)
